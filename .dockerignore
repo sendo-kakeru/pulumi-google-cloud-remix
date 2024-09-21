@@ -1,0 +1,7 @@
+node_modules
+/apps/.pnpm-store
+/apps/.cache
+/apps/build
+/apps/public/build
+# .env
+/apps/sessions
