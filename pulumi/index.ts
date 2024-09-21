@@ -22,7 +22,7 @@ const cloud_build_service_account = new gcp.serviceaccount.Account(
 // Secret Manager
 const github_token_secret = new gcp.secretmanager.Secret("github-pat-secret", {
   secretId: "github-pat-secret",
-  project: projectId,
+//   project: projectId,
   replication: {
     userManaged: {
       replicas: [{ location: region }, { location: buildRegion }],
@@ -44,7 +44,7 @@ const database_url_secret = new gcp.secretmanager.Secret(
   "database-url-secret",
   {
     secretId: "database-url-secret",
-    project: projectId,
+    // project: projectId,
     replication: {
       userManaged: {
         replicas: [{ location: region }, { location: buildRegion }],
@@ -75,8 +75,8 @@ new gcp.secretmanager.SecretIamBinding("github-pat-secret-iam", {
   secretId: github_token_secret.secretId,
   role: "roles/secretmanager.secretAccessor",
   members: [
+      "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
   ],
 });
 new gcp.secretmanager.SecretIamBinding("database-url-secret-iam", {
@@ -84,8 +84,8 @@ new gcp.secretmanager.SecretIamBinding("database-url-secret-iam", {
   secretId: database_url_secret.secretId,
   role: "roles/secretmanager.secretAccessor",
   members: [
+      "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
   ],
 });
 new gcp.projects.IAMBinding("log-writer-iam", {
