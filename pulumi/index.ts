@@ -3,6 +3,7 @@ import * as gcp from "@pulumi/gcp";
 import * as std from "@pulumi/std";
 
 const projectId = "develop-436107";
+const projectNumber = 1022174569886;
 const region = "asia-northeast1";
 const buildRegion = "us-central1";
 const cloudRunServiceName = "todo";
@@ -22,7 +23,7 @@ const cloud_build_service_account = new gcp.serviceaccount.Account(
 // Secret Manager
 const github_token_secret = new gcp.secretmanager.Secret("github-pat-secret", {
   secretId: "github-pat-secret",
-//   project: projectId,
+  //   project: projectId,
   replication: {
     userManaged: {
       replicas: [{ location: region }, { location: buildRegion }],
@@ -75,7 +76,7 @@ new gcp.secretmanager.SecretIamBinding("github-pat-secret-iam", {
   secretId: github_token_secret.secretId,
   role: "roles/secretmanager.secretAccessor",
   members: [
-      "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
   ],
 });
@@ -84,7 +85,7 @@ new gcp.secretmanager.SecretIamBinding("database-url-secret-iam", {
   secretId: database_url_secret.secretId,
   role: "roles/secretmanager.secretAccessor",
   members: [
-      "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
   ],
 });
