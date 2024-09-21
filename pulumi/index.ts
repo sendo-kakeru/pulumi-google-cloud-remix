@@ -47,7 +47,7 @@ const database_url_secret = new gcp.secretmanager.Secret(
     project: projectId,
     replication: {
       userManaged: {
-        replicas: [{ location: region }],
+        replicas: [{ location: region }, { location: buildRegion }],
       },
     },
   }
