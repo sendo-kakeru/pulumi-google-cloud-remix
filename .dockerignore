@@ -5,3 +5,4 @@ node_modules
 /apps/public/build
 # .env
 /apps/sessions
+/pulumi

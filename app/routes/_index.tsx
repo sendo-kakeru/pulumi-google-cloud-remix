@@ -16,12 +16,16 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-console.log("DATABASE_URL", process.env.DATABASE_URL);
-neonConfig.webSocketConstructor = ws;
-const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({ connectionString });
-const adapter = new PrismaNeon(pool);
-const prisma = new PrismaClient({ adapter });
+let prisma: PrismaClient;
+if (process.env.NODE_ENV === "production") {
+  neonConfig.webSocketConstructor = ws;
+  const connectionString = process.env.DATABASE_URL;
+  const pool = new Pool({ connectionString });
+  const adapter = new PrismaNeon(pool);
+  prisma = new PrismaClient({ adapter });
+} else {
+  prisma = new PrismaClient();
+}
 
 export async function loader() {
   const todos = await prisma.todo.findMany();

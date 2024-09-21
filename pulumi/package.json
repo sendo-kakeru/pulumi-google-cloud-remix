@@ -1,0 +1,13 @@
+{
+    "name": "pulumi-google-cloud-remix",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^18",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@pulumi/gcp": "^7.0.0",
+        "@pulumi/pulumi": "^3.113.0",
+        "@pulumi/std": "^1.7.3"
+    }
+}
