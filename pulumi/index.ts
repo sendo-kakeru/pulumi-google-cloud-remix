@@ -10,11 +10,11 @@ const githubRepositoryName = "pulumi-google-cloud-remix";
 
 // Account
 const cloud_build_service_account = new gcp.serviceaccount.Account(
-  "cloudbuild-service-account",
+  "cloud-build-service-account",
   {
-    accountId: "cloudbuild-sa",
+    accountId: "cloud-build-service-account",
     description: "Cloud build service account",
-    displayName: "cloudbuild-sa",
+    displayName: "cloud-build-service-account",
     project: projectId,
   }
 );
@@ -75,6 +75,7 @@ new gcp.secretmanager.SecretIamBinding("github-pat-secret-iam", {
   role: "roles/secretmanager.secretAccessor",
   members: [
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
   ],
 });
 
@@ -84,7 +85,23 @@ new gcp.secretmanager.SecretIamBinding("database-url-secret-iam", {
   role: "roles/secretmanager.secretAccessor",
   members: [
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
   ],
+});
+new gcp.secretmanager.SecretIamMember("cloud-build-access-github-pat", {
+  project: github_token_secret.project,
+  secretId: github_token_secret.secretId,
+  role: "roles/secretmanager.secretAccessor",
+  member:
+    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+});
+
+new gcp.secretmanager.SecretIamMember("cloud-build-access-database-url", {
+  project: database_url_secret.project,
+  secretId: database_url_secret.secretId,
+  role: "roles/secretmanager.secretAccessor",
+  member:
+    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
 });
 new gcp.projects.IAMBinding("log-writer-iam", {
   role: "roles/logging.logWriter",
