@@ -10,20 +10,22 @@ const githubRepositoryName = "pulumi-google-cloud-remix";
 
 // Account
 const cloud_build_service_account = new gcp.serviceaccount.Account(
-  "cloud-build-service-account",
+  "cloudbuild-service-account",
   {
-    accountId: "cloud-build-service-account",
-    displayName: "cloud-build-service-account",
+    accountId: "cloudbuild-sa",
     description: "Cloud build service account",
+    displayName: "cloudbuild-sa",
+    project: projectId,
   }
 );
 
 // Secret Manager
 const github_token_secret = new gcp.secretmanager.Secret("github-pat-secret", {
   secretId: "github-pat-secret",
+  project: projectId,
   replication: {
     userManaged: {
-      replicas: [{ location: region }],
+      replicas: [{ location: region }, { location: buildRegion }],
     },
   },
 });
@@ -42,6 +44,7 @@ const database_url_secret = new gcp.secretmanager.Secret(
   "database-url-secret",
   {
     secretId: "database-url-secret",
+    project: projectId,
     replication: {
       userManaged: {
         replicas: [{ location: region }],
@@ -59,22 +62,26 @@ new gcp.secretmanager.SecretVersion("database-url-secret-version", {
 });
 
 // IAM
-new gcp.secretmanager.SecretIamMember("github-pat-secret-iam", {
-  project: github_token_secret.project,
-  secretId: github_token_secret.secretId,
-  role: "roles/secretmanager.secretAccessor",
-  member: pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-});
-
-new gcp.secretmanager.SecretIamMember("database-url-secret-iam", {
-  project: database_url_secret.project,
-  secretId: database_url_secret.secretId,
-  role: "roles/secretmanager.secretAccessor",
-  member: pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-});
 new gcp.projects.IAMBinding("service-account-user-iam", {
   role: "roles/iam.serviceAccountUser",
   project: projectId,
+  members: [
+    pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+  ],
+});
+new gcp.secretmanager.SecretIamBinding("github-pat-secret-iam", {
+  project: github_token_secret.project,
+  secretId: github_token_secret.secretId,
+  role: "roles/secretmanager.secretAccessor",
+  members: [
+    pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+  ],
+});
+
+new gcp.secretmanager.SecretIamBinding("database-url-secret-iam", {
+  project: database_url_secret.project,
+  secretId: database_url_secret.secretId,
+  role: "roles/secretmanager.secretAccessor",
   members: [
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
   ],
