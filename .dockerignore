@@ -6,3 +6,7 @@ node_modules
 # .env
 /apps/sessions
 /pulumi
+cloudbuild.yaml
+.eslintrc.cjs
+.gitignore
+README.md
