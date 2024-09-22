@@ -51,7 +51,7 @@ substitutions:
   _AR_HOSTNAME: asia-northeast1-docker.pkg.dev
   _PLATFORM: managed
   _ARTIFACT_REGISTRY: cloud-run-source-artifact-registry
-  _PROJECT_NUMBER: 1022174569886
+  _PROJECT_NUMBER: '1022174569886'
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
