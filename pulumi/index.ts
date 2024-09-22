@@ -33,7 +33,7 @@ const github_token_secret = new gcp.secretmanager.Secret("github-pat-secret", {
 const github_token_secret_version = new gcp.secretmanager.SecretVersion(
   "github-pat-secret-version",
   {
-    secret: github_token_secret.id,
+    secret: github_token_secret.name,
     secretData: std
       .file({
         input: "secrets/github-pat.txt",
@@ -54,7 +54,7 @@ const database_url_secret = new gcp.secretmanager.Secret(
   }
 );
 new gcp.secretmanager.SecretVersion("database-url-secret-version", {
-  secret: database_url_secret.id,
+  secret: database_url_secret.name,
   secretData: std
     .file({
       input: "secrets/database-url.txt",
@@ -62,16 +62,8 @@ new gcp.secretmanager.SecretVersion("database-url-secret-version", {
     .then((invoke) => invoke.result),
 });
 
-// IAM
-new gcp.projects.IAMBinding("service-account-user-iam", {
-  role: "roles/iam.serviceAccountUser",
-  project: projectId,
-  members: [
-    pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-  ],
-});
-
-new gcp.secretmanager.SecretIamBinding("github-pat-secret-iam", {
+// Secret Manager IAM
+new gcp.secretmanager.SecretIamBinding("github-pat-secret-accessor-iam", {
   project: github_token_secret.project,
   secretId: github_token_secret.secretId,
   role: "roles/secretmanager.secretAccessor",
@@ -80,12 +72,21 @@ new gcp.secretmanager.SecretIamBinding("github-pat-secret-iam", {
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
   ],
 });
-new gcp.secretmanager.SecretIamBinding("database-url-secret-iam", {
+new gcp.secretmanager.SecretIamBinding("database-url-secret-accessor-iam", {
   project: database_url_secret.project,
   secretId: database_url_secret.secretId,
   role: "roles/secretmanager.secretAccessor",
   members: [
     "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+    pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+  ],
+});
+
+// IAM
+new gcp.projects.IAMBinding("service-account-user-iam", {
+  role: "roles/iam.serviceAccountUser",
+  project: projectId,
+  members: [
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
   ],
 });
@@ -125,7 +126,7 @@ const github_repository_connection = new gcp.cloudbuildv2.Connection(
     githubConfig: {
       appInstallationId: 54910727,
       authorizerCredential: {
-        oauthTokenSecretVersion: github_token_secret_version.name,
+        oauthTokenSecretVersion: github_token_secret_version.id,
       },
     },
     location: buildRegion,
