@@ -13,6 +13,7 @@ const buildRegion = "us-central1";
 const cloudRunServiceName = "todo";
 const githubRepositoryName = "pulumi-google-cloud-remix";
 const cloudflareAccountId = "bd8de93d9aeb8fc006b2eb675d23920d";
+const workersServiceName = "proxy";
 
 // Account
 const cloud_build_service_account = new gcp.serviceaccount.Account(
@@ -163,7 +164,7 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
 
 (async () => {
   const todoCloudRunService = await gcp.cloudrun.getService({
-    name: "todo",
+    name: cloudRunServiceName,
     location: region,
   });
 
@@ -174,30 +175,29 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
 
   await build({
     entryPoints: ["../proxies/src/index.ts"],
-    logLevel: "info",
     platform: "node",
     bundle: true,
     outfile: "../proxies/dist/worker.js",
-    target: "es2020",
     format: "esm",
     minify: true,
   });
 
-  const script = new cloudflare.WorkersScript("proxy-workers-script", {
+  new cloudflare.WorkersScript("proxy-workers-script", {
     accountId: accountId,
-    name: "proxy",
+    name: workersServiceName,
     content: fs.readFileSync("../proxies/dist/worker.js", "utf8"),
     module: true,
+    plainTextBindings: [
+      {
+        name: "ORIGIN_URL",
+        text: todoCloudRunService.statuses[0].url,
+      },
+    ],
   });
-  new cloudflare.WorkersRoute("proxy-workers-route", {
-    zoneId: zoneId,
-    pattern: "proxy-workers." + domain,
-    scriptName: script.name,
-  });
-  new cloudflare.WorkersSecret("origin-url-workers-secret", {
-    accountId: accountId,
-    name: "ORIGIN_URL",
-    scriptName: script.name,
-    secretText: todoCloudRunService.statuses[0].url,
+  new cloudflare.WorkersDomain("proxy-workers-domain", {
+    accountId,
+    hostname: `proxy-workers.${domain}`,
+    service: workersServiceName,
+    zoneId,
   });
 })();
