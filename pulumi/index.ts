@@ -1,13 +1,18 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 import * as std from "@pulumi/std";
+import * as cloudflare from "@pulumi/cloudflare";
+import { build } from "esbuild";
+import * as fs from "fs";
 
+const config = new pulumi.Config();
 const projectId = "develop-436107";
 const projectNumber = 1022174569886;
 const region = "asia-northeast1";
 const buildRegion = "us-central1";
 const cloudRunServiceName = "todo";
 const githubRepositoryName = "pulumi-google-cloud-remix";
+const cloudflareAccountId = "bd8de93d9aeb8fc006b2eb675d23920d";
 
 // Account
 const cloud_build_service_account = new gcp.serviceaccount.Account(
@@ -155,3 +160,44 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
   },
   serviceAccount: pulumi.interpolate`projects/${projectId}/serviceAccounts/${cloud_build_service_account.email}`,
 });
+
+(async () => {
+  const todoCloudRunService = await gcp.cloudrun.getService({
+    name: "todo",
+    location: region,
+  });
+
+  // cloudflare
+  const accountId = config.require("accountId");
+  const zoneId = config.require("zoneId");
+  const domain = config.require("domain");
+
+  await build({
+    entryPoints: ["../proxies/src/index.ts"],
+    logLevel: "info",
+    platform: "node",
+    bundle: true,
+    outfile: "../proxies/dist/worker.js",
+    target: "es2020",
+    format: "esm",
+    minify: true,
+  });
+
+  const script = new cloudflare.WorkersScript("proxy-workers-script", {
+    accountId: accountId,
+    name: "proxy",
+    content: fs.readFileSync("../proxies/dist/worker.js", "utf8"),
+    module: true,
+  });
+  new cloudflare.WorkersRoute("proxy-workers-route", {
+    zoneId: zoneId,
+    pattern: "proxy-workers." + domain,
+    scriptName: script.name,
+  });
+  new cloudflare.WorkersSecret("origin-url-workers-secret", {
+    accountId: accountId,
+    name: "ORIGIN_URL",
+    scriptName: script.name,
+    secretText: todoCloudRunService.statuses[0].url,
+  });
+})();

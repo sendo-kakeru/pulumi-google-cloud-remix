@@ -1,2 +1,7 @@
 config:
+  cloudflare:apiToken:
+    secure: AAABAOWvh16+ZK7NEHHMcEV0e1FyolPXRfmZDmCHaBViL/o7D23BOLUQRbUmA56hlzHqXOgsYBQWCeohXlY3XK05b/AiMg5J
+  pulumi-google-cloud-remix:accountId: bd8de93d9aeb8fc006b2eb675d23920d
+  pulumi-google-cloud-remix:domain: okashibu.com
+  pulumi-google-cloud-remix:zoneId: 566c9c7705939460701cc25656c7c4ce
   gcp:project: develop-436107

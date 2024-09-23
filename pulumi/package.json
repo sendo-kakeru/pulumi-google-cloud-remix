@@ -3,11 +3,14 @@
     "main": "index.ts",
     "devDependencies": {
         "@types/node": "^18",
+        "esbuild": "^0.24.0",
         "typescript": "^5.0.0"
     },
     "dependencies": {
+        "@pulumi/cloudflare": "^5.39.0",
         "@pulumi/gcp": "^7.0.0",
         "@pulumi/pulumi": "^3.113.0",
-        "@pulumi/std": "^1.7.3"
+        "@pulumi/std": "^1.7.3",
+        "glob": "^11.0.0"
     }
 }
