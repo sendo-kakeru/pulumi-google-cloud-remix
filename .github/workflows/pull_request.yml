@@ -10,14 +10,14 @@ jobs:
       id-token: 'write'
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3.5.0
-        with:
-          node-version-file: pulumi/package.json
+      # - uses: actions/setup-node@v3.5.0
+      #   with:
+      #     node-version-file: pulumi/package.json
       - uses: 'google-github-actions/auth@v2'
         with:
           project_id: 'develop-436107'
           workload_identity_provider: 'projects/1022174569886/locations/global/workloadIdentityPools/github-action/providers/github'
-      - run: npm install
+      - run: cd pulumi && npm install
       - uses: pulumi/actions@v3
         with:
           command: preview
