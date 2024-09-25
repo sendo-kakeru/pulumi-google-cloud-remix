@@ -11,6 +11,7 @@ jobs:
       contents: 'read'
       id-token: 'write'
     steps:
+        working-directory: ./pulumi
       - uses: actions/checkout@v4
       # - uses: actions/setup-node@v3.5.0
       #   with:
@@ -20,7 +21,9 @@ jobs:
           project_id: 'develop-436107'
           workload_identity_provider: 'projects/1022174569886/locations/global/workloadIdentityPools/github-action/providers/github'
       - run: cd pulumi && npm install
+        working-directory: ./pulumi
       - uses: pulumi/actions@v3
+        working-directory: ./pulumi
         with:
           command: up
           stack-name: org-name/dev
