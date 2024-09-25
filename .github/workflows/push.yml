@@ -12,9 +12,9 @@ jobs:
       id-token: 'write'
     steps:
       - uses: actions/checkout@v4
-      # - uses: actions/setup-node@v3.5.0
-      #   with:
-      #     node-version-file: package.json
+      - uses: actions/setup-node@v3.5.0
+        with:
+          node-version-file: pulumi/package.json
       - uses: 'google-github-actions/auth@v2'
         with:
           project_id: 'develop-436107'
