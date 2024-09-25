@@ -5,9 +5,12 @@ jobs:
   preview:
     name: Preview
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3.5.0
+      # - uses: actions/setup-node@v3.5.0
       #   with:
       #     node-version-file: package.json
       - uses: 'google-github-actions/auth@v2'
