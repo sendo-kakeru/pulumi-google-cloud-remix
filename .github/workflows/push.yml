@@ -11,12 +11,12 @@ jobs:
       contents: 'read'
       id-token: 'write'
     steps:
-        working-directory: ./pulumi
       - uses: actions/checkout@v4
       # - uses: actions/setup-node@v3.5.0
       #   with:
       #     node-version-file: pulumi/package.json
       - uses: 'google-github-actions/auth@v2'
+        working-directory: ./pulumi
         with:
           project_id: 'develop-436107'
           workload_identity_provider: 'projects/1022174569886/locations/global/workloadIdentityPools/github-action/providers/github'
