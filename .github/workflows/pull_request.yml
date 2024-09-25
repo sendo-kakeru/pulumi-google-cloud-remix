@@ -14,11 +14,14 @@ jobs:
       #   with:
       #     node-version-file: pulumi/package.json
       - uses: 'google-github-actions/auth@v2'
+        working-directory: ./pulumi
         with:
           project_id: 'develop-436107'
           workload_identity_provider: 'projects/1022174569886/locations/global/workloadIdentityPools/github-action/providers/github'
-      - run: cd pulumi && npm install
+      - run: npm install
+        working-directory: ./pulumi
       - uses: pulumi/actions@v3
+        working-directory: ./pulumi
         with:
           command: preview
           stack-name: org-name/dev
