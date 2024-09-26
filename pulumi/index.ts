@@ -1,6 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
-import * as std from "@pulumi/std";
 import * as cloudflare from "@pulumi/cloudflare";
 import { build } from "esbuild";
 import * as fs from "fs";
