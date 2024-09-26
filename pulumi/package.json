@@ -11,6 +11,7 @@
         "@pulumi/gcp": "^7.0.0",
         "@pulumi/pulumi": "^3.113.0",
         "@pulumi/std": "^1.7.3",
+        "dotenv": "^16.4.5",
         "glob": "^11.0.0"
     }
 }

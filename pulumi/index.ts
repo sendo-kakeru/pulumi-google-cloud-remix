@@ -4,15 +4,20 @@ import * as std from "@pulumi/std";
 import * as cloudflare from "@pulumi/cloudflare";
 import { build } from "esbuild";
 import * as fs from "fs";
+import { config } from "dotenv";
+config();
 
-const config = new pulumi.Config();
+if (!process.env.DATABASE_URL || !process.env.GITHUB_PAT) {
+  throw new Error("Please set DATABASE_URL and GITHUB_PAT in .env file");
+}
+
+const pulumiConfig = new pulumi.Config();
 const projectId = "develop-436107";
 const projectNumber = 1022174569886;
 const region = "asia-northeast1";
 const buildRegion = "us-central1";
 const cloudRunServiceName = "todo";
 const githubRepositoryName = "pulumi-google-cloud-remix";
-const cloudflareAccountId = "bd8de93d9aeb8fc006b2eb675d23920d";
 const workersServiceName = "proxy";
 
 // Account
@@ -39,11 +44,7 @@ const github_token_secret_version = new gcp.secretmanager.SecretVersion(
   "github-pat-secret-version",
   {
     secret: github_token_secret.name,
-    secretData: std
-      .file({
-        input: "secrets/github-pat.txt",
-      })
-      .then((invoke) => invoke.result),
+    secretData: process.env.GITHUB_PAT,
   }
 );
 const database_url_secret = new gcp.secretmanager.Secret(
@@ -59,11 +60,7 @@ const database_url_secret = new gcp.secretmanager.Secret(
 );
 new gcp.secretmanager.SecretVersion("database-url-secret-version", {
   secret: database_url_secret.name,
-  secretData: std
-    .file({
-      input: "secrets/database-url.txt",
-    })
-    .then((invoke) => invoke.result),
+  secretData: process.env.DATABASE_URL,
 });
 
 // Secret Manager IAM
@@ -169,9 +166,9 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
   });
 
   // cloudflare
-  const accountId = config.require("accountId");
-  const zoneId = config.require("zoneId");
-  const domain = config.require("domain");
+  const accountId = pulumiConfig.require("accountId");
+  const zoneId = pulumiConfig.require("zoneId");
+  const domain = pulumiConfig.require("domain");
 
   await build({
     entryPoints: ["../proxies/src/index.ts"],
