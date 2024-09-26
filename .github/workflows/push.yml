@@ -80,13 +80,13 @@ jobs:
         working-directory: ./pulumi  # Pulumi環境があるディレクトリに移動
         run: npm install
 
+      - name: Create env file
+        run: |
+          touch .env
+          echo DATABASE_URL=${DATABASE_URL} >> .env
+          echo GITHUB_PAT=${GITHUB_PAT} >> .env
       - name: Install Pulumi CLI
         run: npm install -g @pulumi/pulumi
-      # - name: Create env file
-      #   run: |
-      #     touch .env
-      #     echo DATABASE_URL=${DATABASE_URL} >> .env
-      #     echo GITHUB_PAT=${GITHUB_PAT} >> .env
       - name: Auth with Google Cloud
         uses: 'google-github-actions/auth@v2'
         # working-directory: ./pulumi
@@ -95,10 +95,6 @@ jobs:
           workload_identity_provider: 'projects/1022174569886/locations/global/workloadIdentityPools/github-action/providers/github'
       - name: Pulumi Preview
         uses: pulumi/actions@v3
-        run: |
-          touch .env
-          echo DATABASE_URL=${DATABASE_URL} >> .env
-          echo GITHUB_PAT=${GITHUB_PAT} >> .env
         with:
           command: preview
           stack-name: dev  # Pulumiのスタック名を指定
