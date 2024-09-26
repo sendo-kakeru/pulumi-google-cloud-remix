@@ -1,9 +1,65 @@
+# name: Deploy Cloudflare Workers with Pulumi
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20'
+
+#       - name: Install dependencies
+#         working-directory: ./pulumi
+#         run: npm install
+
+#       - name: Install Pulumi
+#         uses: pulumi/actions@v3
+#         with:
+#           command: install
+#           stack-name: dev
+
+#       - name: Login to Pulumi
+#         env:
+#           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+#         working-directory: ./pulumi
+#         run: pulumi login
+
+#       - name: Set up Cloudflare environment variables
+#         env:
+#           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+#           PULUMI_CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+#           PULUMI_CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+#           PULUMI_CLOUDFLARE_DOMAIN: ${{ secrets.CLOUDFLARE_DOMAIN }}
+#         run: echo "Cloudflare environment variables set."
+
+#       - name: Pulumi Preview
+#         working-directory: ./pulumi
+#         run: pulumi preview
+#         # run: pulumi preview --stack dev
+
+#       - name: Pulumi Up
+#         env:
+#           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+#         working-directory: ./pulumi
+#         run: pulumi up --yes
+#         # run: pulumi up --yes --stack dev
+
 name: Deploy Cloudflare Workers with Pulumi
 
 on:
   push:
     branches:
-      - main
+      - main  # デプロイをトリガーするブランチを指定
 
 jobs:
   deploy:
@@ -16,43 +72,34 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '20' # 必要なNode.jsのバージョンを指定
 
       - name: Install dependencies
-        working-directory: ./pulumi
+        working-directory: ./pulumi  # Pulumi環境があるディレクトリに移動
         run: npm install
 
-      - name: Install Pulumi
-        uses: pulumi/actions@v3
-        with:
-          command: install
-          stack-name: dev
-
-      - name: Login to Pulumi
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-        working-directory: ./pulumi
-        run: pulumi login
-
-      - name: Set up Cloudflare environment variables
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          PULUMI_CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          PULUMI_CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-          PULUMI_CLOUDFLARE_DOMAIN: ${{ secrets.CLOUDFLARE_DOMAIN }}
-        run: echo "Cloudflare environment variables set."
+      - name: Install Pulumi CLI
+        run: npm install -g @pulumi/pulumi
 
       - name: Pulumi Preview
-        working-directory: ./pulumi
-        run: pulumi preview
-        # run: pulumi preview --stack dev
+        uses: pulumi/actions@v3
+        with:
+          command: preview
+          stack-name: dev  # Pulumiのスタック名を指定
+          work-dir: ./pulumi  # Pulumiプロジェクトのディレクトリを指定
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}  # PulumiのアクセストークンをGitHub Secretsに設定
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}  # CloudflareのAPIトークンをGitHub Secretsに設定
 
       - name: Pulumi Up
+        uses: pulumi/actions@v3
+        with:
+          command: up
+          stack-name: dev  # Pulumiのスタック名を指定
+          work-dir: ./pulumi  # Pulumiプロジェクトのディレクトリを指定
         env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        working-directory: ./pulumi
-        run: pulumi up --yes
-        # run: pulumi up --yes --stack dev
 
 # name: Pulumi
 # on:
