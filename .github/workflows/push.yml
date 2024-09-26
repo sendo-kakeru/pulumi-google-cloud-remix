@@ -20,6 +20,13 @@ jobs:
         with:
           project_id: 'develop-436107'
           workload_identity_provider: 'projects/1022174569886/locations/global/workloadIdentityPools/github-action/providers/github'
+      - uses: cloudflare/pages-action@1
+        with:
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # projectName: <ここにプロジェクト名（今回は "cloudflare-pages-with-github-actions-prac" ）>
+          # directory: < ここは ./dist など >
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
       - run: npm install
         working-directory: ./pulumi
       - uses: pulumi/actions@v3
@@ -30,3 +37,5 @@ jobs:
           work-dir: ./pulumi
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
