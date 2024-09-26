@@ -82,6 +82,11 @@ jobs:
 
       - name: Install Pulumi CLI
         run: npm install -g @pulumi/pulumi
+      - name: Create env file
+        run: |
+          touch .env
+          echo DATABASE_URL=${DATABASE_URL} >> .env
+          echo GITHUB_PAT=${GITHUB_PAT} >> .env
       - name: Auth with Google Cloud
         uses: 'google-github-actions/auth@v2'
         # working-directory: ./pulumi
