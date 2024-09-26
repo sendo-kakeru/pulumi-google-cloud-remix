@@ -24,8 +24,8 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          # projectName: <ここにプロジェクト名（今回は "cloudflare-pages-with-github-actions-prac" ）>
-          # directory: < ここは ./dist など >
+          projectName: proxy
+          directory: ./pulumi
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
       - run: npm install
         working-directory: ./pulumi
