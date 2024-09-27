@@ -3,8 +3,8 @@ import * as gcp from "@pulumi/gcp";
 import * as cloudflare from "@pulumi/cloudflare";
 import { build } from "esbuild";
 import * as fs from "fs";
-// import { config } from "dotenv";
-// config();
+import { config } from "dotenv";
+config();
 
 if (!process.env.DATABASE_URL || !process.env.GITHUB_PAT) {
   throw new Error("Please set DATABASE_URL and GITHUB_PAT in .env file");
