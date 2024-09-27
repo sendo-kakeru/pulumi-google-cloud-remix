@@ -6,8 +6,8 @@ import * as fs from "fs";
 import { config } from "dotenv";
 config();
 
-if (!process.env.DATABASE_URL || !process.env.GITHUB_PAT) {
-  throw new Error("Please set DATABASE_URL and GITHUB_PAT in .env file");
+if (!process.env.DATABASE_URL || !process.env.GIT_PAT) {
+  throw new Error("Please set DATABASE_URL and GIT_PAT in .env file");
 }
 
 const pulumiConfig = new pulumi.Config();
@@ -43,7 +43,7 @@ const github_token_secret_version = new gcp.secretmanager.SecretVersion(
   "github-pat-secret-version",
   {
     secret: github_token_secret.name,
-    secretData: process.env.GITHUB_PAT,
+    secretData: process.env.GIT_PAT,
   }
 );
 const database_url_secret = new gcp.secretmanager.Secret(

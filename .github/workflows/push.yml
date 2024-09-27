@@ -80,12 +80,12 @@ jobs:
         working-directory: ./pulumi  # Pulumi環境があるディレクトリに移動
         run: npm install
 
-      - name: Create env file
-        run: |
-          touch .env
-          echo DATABASE_URL =${{ secrets.DATABASE_URL }} >> .env
-          echo GITHUB_PAT =${{ secrets.GITHUB_PAT }} >> .env
-          cat .env
+      # - name: Create env file
+      #   run: |
+      #     touch .env
+      #     echo DATABASE_URL =${{ secrets.DATABASE_URL }} >> .env
+      #     echo GIT_PAT =${{ secrets.GIT_PAT }} >> .env
+      #     cat .env
       - name: Install Pulumi CLI
         run: npm install -g @pulumi/pulumi
       - name: Auth with Google Cloud
@@ -104,7 +104,7 @@ jobs:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}  # PulumiのアクセストークンをGitHub Secretsに設定
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}  # CloudflareのAPIトークンをGitHub Secretsに設定
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          GITHUB_PAT: ${{ secrets.GITHUB_PAT }} 
+          GIT_PAT: ${{ secrets.GIT_PAT }} 
 
       - name: Pulumi Up
         uses: pulumi/actions@v3
@@ -116,7 +116,7 @@ jobs:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          GITHUB_PAT: ${{ secrets.GITHUB_PAT }} 
+          GIT_PAT: ${{ secrets.GIT_PAT }} 
 # name: Pulumi
 # on:
 #   push:
