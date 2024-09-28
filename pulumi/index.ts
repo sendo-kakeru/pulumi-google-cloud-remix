@@ -4,6 +4,7 @@ import * as cloudflare from "@pulumi/cloudflare";
 import { build } from "esbuild";
 import * as fs from "fs";
 import { config } from "dotenv";
+
 config();
 
 if (!process.env.DATABASE_URL || !process.env.GIT_PAT) {
