@@ -10,6 +10,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
+      run: 'read'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
