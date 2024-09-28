@@ -22,9 +22,9 @@ jobs:
       - name: Install pulumi dependencies
         working-directory: ./pulumi
         run: npm install
-      - name: Install hono dependencies
-        working-directory: ./proxies
-        run: npm install
+      # - name: Install hono dependencies
+      #   working-directory: ./proxies
+      #   run: npm install
 
       - name: Install Pulumi CLI
         run: npm install -g @pulumi/pulumi
@@ -32,6 +32,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           project_id: 'develop-436107'
+          service_account: 'cloud-build-service-account@develop-436107.iam.gserviceaccount.com'
           workload_identity_provider: 'projects/1022174569886/locations/global/workloadIdentityPools/github-action/providers/github'
       - name: Pulumi Preview
         uses: pulumi/actions@v3
