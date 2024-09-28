@@ -105,6 +105,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}  # CloudflareのAPIトークンをGitHub Secretsに設定
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GIT_PAT: ${{ secrets.GIT_PAT }} 
+          
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
       - name: Pulumi Up
         uses: pulumi/actions@v3
