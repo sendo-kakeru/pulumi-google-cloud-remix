@@ -76,8 +76,11 @@ jobs:
         with:
           node-version: '20' # 必要なNode.jsのバージョンを指定
 
-      - name: Install dependencies
+      - name: Install pulumi dependencies
         working-directory: ./pulumi  # Pulumi環境があるディレクトリに移動
+        run: npm install
+      - name: Install hono dependencies
+        working-directory: ./proxies
         run: npm install
 
       # - name: Create env file
