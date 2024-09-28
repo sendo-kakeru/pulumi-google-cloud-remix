@@ -5,7 +5,7 @@ import { build } from "esbuild";
 import * as fs from "fs";
 import { config } from "dotenv";
 config();
-console.log("GOOGLE_CREDENTIALS", process.env.GOOGLE_CREDENTIALS);
+
 if (!process.env.DATABASE_URL || !process.env.GIT_PAT) {
   throw new Error("Please set DATABASE_URL and GIT_PAT in .env file");
 }
