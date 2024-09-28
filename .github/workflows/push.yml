@@ -32,7 +32,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           project_id: 'develop-436107'
-          service_account: 'gh-action@develop-436107.iam.gserviceaccount.com'
+          service_account: 'github-action@develop-436107.iam.gserviceaccount.com'
           workload_identity_provider: 'projects/1022174569886/locations/global/workloadIdentityPools/github-action/providers/github'
       - name: Pulumi Preview
         uses: pulumi/actions@v3
