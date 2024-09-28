@@ -171,16 +171,16 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
     name: cloudRunServiceName,
     location: region,
   });
-  new gcp.cloudrun.IamBinding("cloud-run-viewer-iam", {
-    //GH Action用
-    location: region,
-    project: projectId,
-    role: "roles/run.viewer",
-    service: todoCloudRunService.name,
-    members: [
-      pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-    ],
-  });
+  // new gcp.cloudrun.IamBinding("cloud-run-viewer-iam", {
+  //   //GH Action用
+  //   location: region,
+  //   project: projectId,
+  //   role: "roles/run.viewer",
+  //   service: todoCloudRunService.name,
+  //   members: [
+  //     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+  //   ],
+  // });
 
   // cloudflare
   const accountId = pulumiConfig.require("accountId");
