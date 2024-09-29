@@ -199,7 +199,7 @@ new gcp.cloudbuild.Trigger("cloud-build-staging-trigger", {
   project: projectId,
   repositoryEventConfig: {
     push: {
-      branch: "^main$",
+      branch: "^develop$",
     },
     repository: github_project_repository.id,
   },
