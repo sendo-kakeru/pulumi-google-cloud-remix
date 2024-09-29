@@ -18,8 +18,8 @@ app.use(
 );
 app.use("*",
   basicAuth({
-    username: "username",
-    password: "password",
+    username: "dev",
+    password: "dev",
   })
 )
 app.all("*", async (c) => {
