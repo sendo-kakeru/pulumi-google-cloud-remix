@@ -179,6 +179,12 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
     minify: true,
   });
 
+  if (!process.env.GOOGLE_CLOUD_PRINT_IDENTITY_TOKEN) {
+    throw new Error(
+      "Please set GOOGLE_CLOUD_PRINT_IDENTITY_TOKEN in .env file"
+    );
+  }
+
   new cloudflare.WorkersScript("proxy-workers-script", {
     accountId: accountId,
     name: workersServiceName,
@@ -188,6 +194,11 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
       {
         name: "ORIGIN_URL",
         text: todoCloudRunService.statuses[0].url,
+      },
+      // 限定公開設定
+      {
+        name: "GOOGLE_CLOUD_PRINT_IDENTITY_TOKEN",
+        text: process.env.GOOGLE_CLOUD_PRINT_IDENTITY_TOKEN,
       },
     ],
   });
