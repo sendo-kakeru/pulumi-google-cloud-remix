@@ -7,7 +7,11 @@ import { config } from "dotenv";
 
 config();
 
-if (!process.env.DATABASE_URL || !process.env.GIT_PAT) {
+if (
+  !process.env.DATABASE_URL_PROD ||
+  !process.env.DATABASE_URL_STAGING ||
+  !process.env.GIT_PAT
+) {
   throw new Error("Please set DATABASE_URL and GIT_PAT in .env file");
 }
 
@@ -47,10 +51,10 @@ const github_token_secret_version = new gcp.secretmanager.SecretVersion(
     secretData: process.env.GIT_PAT,
   }
 );
-const database_url_secret = new gcp.secretmanager.Secret(
-  "database-url-secret",
+const database_url_prod_secret = new gcp.secretmanager.Secret(
+  "database-url-prod-secret",
   {
-    secretId: "database-url-secret",
+    secretId: "database-url-prod-secret",
     replication: {
       userManaged: {
         replicas: [{ location: region }, { location: buildRegion }],
@@ -58,9 +62,24 @@ const database_url_secret = new gcp.secretmanager.Secret(
     },
   }
 );
-new gcp.secretmanager.SecretVersion("database-url-secret-version", {
-  secret: database_url_secret.name,
-  secretData: process.env.DATABASE_URL,
+new gcp.secretmanager.SecretVersion("database-url-prod-secret-version", {
+  secret: database_url_prod_secret.name,
+  secretData: process.env.DATABASE_URL_PROD,
+});
+const database_url_staging_secret = new gcp.secretmanager.Secret(
+  "database-url-staging-secret",
+  {
+    secretId: "database-url-staging-secret",
+    replication: {
+      userManaged: {
+        replicas: [{ location: region }, { location: buildRegion }],
+      },
+    },
+  }
+);
+new gcp.secretmanager.SecretVersion("database-url-staging-secret-version", {
+  secret: database_url_staging_secret.name,
+  secretData: process.env.DATABASE_URL_STAGING,
 });
 
 // Secret Manager IAM
@@ -73,15 +92,30 @@ new gcp.secretmanager.SecretIamBinding("github-pat-secret-accessor-iam", {
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
   ],
 });
-new gcp.secretmanager.SecretIamBinding("database-url-secret-accessor-iam", {
-  project: database_url_secret.project,
-  secretId: database_url_secret.secretId,
-  role: "roles/secretmanager.secretAccessor",
-  members: [
-    "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
-    pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-  ],
-});
+new gcp.secretmanager.SecretIamBinding(
+  "database-url-prod-secret-accessor-iam",
+  {
+    project: database_url_prod_secret.project,
+    secretId: database_url_prod_secret.secretId,
+    role: "roles/secretmanager.secretAccessor",
+    members: [
+      "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+      pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+    ],
+  }
+);
+new gcp.secretmanager.SecretIamBinding(
+  "database-url-staging-secret-accessor-iam",
+  {
+    project: database_url_staging_secret.project,
+    secretId: database_url_staging_secret.secretId,
+    role: "roles/secretmanager.secretAccessor",
+    members: [
+      "serviceAccount:service-1022174569886@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+      pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+    ],
+  }
+);
 
 // IAM
 new gcp.projects.IAMBinding("service-account-user-iam", {
@@ -155,6 +189,9 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
       branch: "^main$",
     },
     repository: github_project_repository.id,
+  },
+  substitutions: {
+    SERVICE_NAME: cloudRunServiceName,
   },
   serviceAccount: pulumi.interpolate`projects/${projectId}/serviceAccounts/${cloud_build_service_account.email}`,
 });
