@@ -91,6 +91,13 @@ new gcp.projects.IAMBinding("service-account-user-iam", {
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
   ],
 });
+new gcp.projects.IAMBinding("service-account-service-usage-iam", { //GH Action用
+  project: projectId,
+  role: "roles/serviceusage.serviceUsageAdmin",
+  members: [
+    pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
+  ],
+});
 // new gcp.projects.IAMBinding("service-account-token-creator-iam", { //GH Action用
 //   project: projectId,
 //   role: "roles/iam.serviceAccountTokenCreator",
