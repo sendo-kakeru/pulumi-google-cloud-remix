@@ -1,11 +1,16 @@
 import {
+  json,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LinksFunction,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 
 import "./tailwind.css";
 
@@ -21,6 +26,22 @@ export const links: LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  if (url.origin !== "https://proxy-workers.okashibu.com") {
+    throw json({ message: "Unauthorized" }, { status: 401 });
+  }
+  return json({});
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const url = new URL(request.url);
+  if (url.origin !== "https://proxy-workers.okashibu.com") {
+    throw json({ message: "Unauthorized" }, { status: 401 });
+  }
+  return json({});
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
