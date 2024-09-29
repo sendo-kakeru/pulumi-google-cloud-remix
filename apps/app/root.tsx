@@ -28,15 +28,35 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  if (request.headers.get("X-Forwarded-Host") !== "proxy-workers.okashibu.com") {
-    throw json({ message: "Unauthorized" }, { status: 401 });
+  if (
+    process.env.NODE_ENV === "production" &&
+    request.headers.get("X-Forwarded-Host") !== "proxy-prod.okashibu.com"
+  ) {
+    throw json({ message: "Bad Request" }, { status: 400 });
+  }
+  if (
+    (process.env.NODE_ENV === "test" &&
+      request.headers.get("X-Forwarded-Host") !==
+        "proxy-staging.okashibu.com")
+  ) {
+    throw json({ message: "Bad Request" }, { status: 400 });
   }
   return json({});
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  if (request.headers.get("X-Forwarded-Host") !== "proxy-workers.okashibu.com") {
-    throw json({ message: "Unauthorized" }, { status: 401 });
+  if (
+    process.env.NODE_ENV === "production" &&
+    request.headers.get("X-Forwarded-Host") !== "proxy-prod.okashibu.com"
+  ) {
+    throw json({ message: "Bad Request" }, { status: 400 });
+  }
+  if (
+    (process.env.NODE_ENV === "test" &&
+      request.headers.get("X-Forwarded-Host") !==
+        "proxy-staging.okashibu.com")
+  ) {
+    throw json({ message: "Bad Request" }, { status: 400 });
   }
   return json({});
 }
