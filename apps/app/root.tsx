@@ -28,7 +28,6 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  console.log("url.hostname", request.headers.get("X-Forwarded-Host"));
   if (request.headers.get("X-Forwarded-Host") !== "proxy-workers.okashibu.com") {
     throw json({ message: "Unauthorized" }, { status: 401 });
   }

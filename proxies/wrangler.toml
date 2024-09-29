@@ -3,7 +3,7 @@ compatibility_date = "2024-09-23"
 compatibility_flags = [ "nodejs_compat" ]
 
 # [vars]
-# MY_VAR = "my-variable"
+# ORIGIN_URL = "http://localhost:5173"
 
 # [[kv_namespaces]]
 # binding = "MY_KV_NAMESPACE"
