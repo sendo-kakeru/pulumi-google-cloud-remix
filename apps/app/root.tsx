@@ -29,7 +29,7 @@ export const links: LinksFunction = () => [
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  if (url.origin !== "https://proxy-workers.okashibu.com") {
+  if (url.hostname !== "proxy-workers.okashibu.com") {
     throw json({ message: "Unauthorized" }, { status: 401 });
   }
   return json({});
@@ -37,7 +37,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const url = new URL(request.url);
-  if (url.origin !== "https://proxy-workers.okashibu.com") {
+  if (url.hostname !== "proxy-workers.okashibu.com") {
     throw json({ message: "Unauthorized" }, { status: 401 });
   }
   return json({});
