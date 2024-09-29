@@ -28,17 +28,15 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const url = new URL(request.url);
-  console.log("url.hostname", url.hostname);
-  if (url.hostname !== "proxy-workers.okashibu.com") {
+  console.log("url.hostname", request.headers.get("X-Forwarded-Host"));
+  if (request.headers.get("X-Forwarded-Host") !== "proxy-workers.okashibu.com") {
     throw json({ message: "Unauthorized" }, { status: 401 });
   }
   return json({});
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const url = new URL(request.url);
-  if (url.hostname !== "proxy-workers.okashibu.com") {
+  if (request.headers.get("X-Forwarded-Host") !== "proxy-workers.okashibu.com") {
     throw json({ message: "Unauthorized" }, { status: 401 });
   }
   return json({});
