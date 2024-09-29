@@ -28,7 +28,7 @@ steps:
       --set-env-vars DATABASE_URL=$$DATABASE_URL
       '
     ]
-    本番用（一般公開設定）
+    # 本番用（一般公開設定）
     # args: [
     #   '-c',
     #   'gcloud run deploy "$_SERVICE_NAME"
