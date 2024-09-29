@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { basicAuth } from "hono/basic-auth";
 import { cors } from "hono/cors";
 import {  Env } from "hono/types";
 
@@ -15,6 +16,12 @@ app.use(
     allowMethods: ["*"],
   })
 );
+app.use("*",
+  basicAuth({
+    username: "username",
+    password: "password",
+  })
+)
 app.all("*", async (c) => {
   const url = new URL(c.req.url);
   const ORIGIN_URL = c.env.ORIGIN_URL;
