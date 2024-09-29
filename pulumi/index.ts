@@ -91,27 +91,6 @@ new gcp.projects.IAMBinding("service-account-user-iam", {
     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
   ],
 });
-new gcp.projects.IAMBinding("service-account-service-usage-iam", { //GH Action用
-  project: projectId,
-  role: "roles/serviceusage.serviceUsageAdmin",
-  members: [
-    pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-  ],
-});
-// new gcp.projects.IAMBinding("service-account-token-creator-iam", { //GH Action用
-//   project: projectId,
-//   role: "roles/iam.serviceAccountTokenCreator",
-//   members: [
-//     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-//   ],
-// });
-// new gcp.projects.IAMBinding("service-account-cloud-run-viewer-iam", { //GH Action用
-//   project: projectId,
-//   role: "roles/run.viewer",
-//   members: [
-//     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-//   ],
-// });
 new gcp.projects.IAMBinding("log-writer-iam", {
   role: "roles/logging.logWriter",
   project: projectId,
@@ -185,16 +164,6 @@ new gcp.cloudbuild.Trigger("cloud-build-trigger", {
     name: cloudRunServiceName,
     location: region,
   });
-  // new gcp.cloudrun.IamBinding("cloud-run-viewer-iam", {
-  //   //GH Action用
-  //   location: region,
-  //   project: projectId,
-  //   role: "roles/run.viewer",
-  //   service: todoCloudRunService.name,
-  //   members: [
-  //     pulumi.interpolate`serviceAccount:${cloud_build_service_account.email}`,
-  //   ],
-  // });
 
   // cloudflare
   const accountId = pulumiConfig.require("accountId");
