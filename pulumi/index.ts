@@ -207,8 +207,12 @@ new gcp.cloudbuild.Trigger("cloud-build-staging-trigger", {
 });
 
 (async () => {
-  const todoCloudRunService = await gcp.cloudrun.getService({
-    name: cloudRunServiceName,
+  const todoCloudRunServiceProd = await gcp.cloudrun.getService({
+    name: `${cloudRunServiceName}-prod`,
+    location: region,
+  });
+  const todoCloudRunServiceStaging = await gcp.cloudrun.getService({
+    name: `${cloudRunServiceName}-staging`,
     location: region,
   });
 
@@ -233,14 +237,24 @@ new gcp.cloudbuild.Trigger("cloud-build-staging-trigger", {
     module: true,
     plainTextBindings: [
       {
-        name: "ORIGIN_URL",
-        text: todoCloudRunService.statuses[0].url,
+        name: "ORIGIN_URL_PROD",
+        text: todoCloudRunServiceProd.statuses[0].url,
+      },
+      {
+        name: "ORIGIN_URL_STAGING",
+        text: todoCloudRunServiceStaging.statuses[0].url,
       },
     ],
   });
-  new cloudflare.WorkersDomain("proxy-workers-domain", {
+  new cloudflare.WorkersDomain("proxy-workers-domain-prod", {
     accountId,
-    hostname: `proxy-workers.${domain}`,
+    hostname: `proxy-prod.${domain}`,
+    service: workersServiceName,
+    zoneId,
+  });
+  new cloudflare.WorkersDomain("proxy-workers-domain-staging", {
+    accountId,
+    hostname: `proxy-staging.${domain}`,
     service: workersServiceName,
     zoneId,
   });
