@@ -29,7 +29,6 @@ steps:
       --allow-unauthenticated
       '
     ]
-
     id: Deploy
     secretEnv: [
       'DATABASE_URL_PROD',
@@ -50,7 +49,6 @@ steps:
     secretEnv: [
       'DATABASE_URL_PROD',
     ]
-    
 images:
   - >-
     $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
