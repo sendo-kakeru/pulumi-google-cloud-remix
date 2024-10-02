@@ -179,10 +179,10 @@ const github_project_repository = new gcp.cloudbuildv2.Repository(
     remoteUri: `https://github.com/sendo-kakeru/${githubRepositoryName}.git`,
   }
 );
-new gcp.cloudbuild.Trigger("cloud-build-prod-trigger", {
+new gcp.cloudbuild.Trigger("cloud-build-trigger-prod", {
   filename: "cloudbuild-prod.yaml",
   location: buildRegion,
-  name: `${cloudRunServiceName}-app-prod-trigger`,
+  name: `${cloudRunServiceName}-trigger-prod`,
   project: projectId,
   repositoryEventConfig: {
     push: {
@@ -192,10 +192,10 @@ new gcp.cloudbuild.Trigger("cloud-build-prod-trigger", {
   },
   serviceAccount: pulumi.interpolate`projects/${projectId}/serviceAccounts/${cloud_build_service_account.email}`,
 });
-new gcp.cloudbuild.Trigger("cloud-build-staging-trigger", {
+new gcp.cloudbuild.Trigger("cloud-build-trigger-staging", {
   filename: "cloudbuild-staging.yaml",
   location: buildRegion,
-  name: `${cloudRunServiceName}-app-staging-trigger`,
+  name: `${cloudRunServiceName}-trigger-staging`,
   project: projectId,
   repositoryEventConfig: {
     push: {
