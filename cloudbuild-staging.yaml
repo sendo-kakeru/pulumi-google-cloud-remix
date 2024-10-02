@@ -29,7 +29,6 @@ steps:
       --allow-unauthenticated
       '
     ]
-
     id: Deploy
     secretEnv: [
       'DATABASE_URL_STAGING',
