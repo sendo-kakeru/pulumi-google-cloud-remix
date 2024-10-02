@@ -34,13 +34,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   ) {
     throw json({ message: "Bad Request" }, { status: 400 });
   }
-  if (
-    (process.env.NODE_ENV === "test" &&
-      request.headers.get("X-Forwarded-Host") !==
-        "proxy-staging.okashibu.com")
-  ) {
-    throw json({ message: "Bad Request" }, { status: 400 });
-  }
   return json({});
 }
 
@@ -48,13 +41,6 @@ export async function action({ request }: ActionFunctionArgs) {
   if (
     process.env.NODE_ENV === "production" &&
     request.headers.get("X-Forwarded-Host") !== "proxy-prod.okashibu.com"
-  ) {
-    throw json({ message: "Bad Request" }, { status: 400 });
-  }
-  if (
-    (process.env.NODE_ENV === "test" &&
-      request.headers.get("X-Forwarded-Host") !==
-        "proxy-staging.okashibu.com")
   ) {
     throw json({ message: "Bad Request" }, { status: 400 });
   }
