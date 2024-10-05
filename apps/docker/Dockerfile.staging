@@ -23,9 +23,9 @@ ENV NODE_ENV=staging
 WORKDIR /app
 
 COPY package.json ./
-COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/build/ ./build
+COPY --from=deps /app/.env ./.env
 COPY --from=deps /app/node_modules ./node_modules
 
 EXPOSE 8080
