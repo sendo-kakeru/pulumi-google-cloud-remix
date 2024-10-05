@@ -3,7 +3,8 @@ steps:
     args:
       - build
       - "--no-cache"
-      - "--build-arg NODE_ENV=staging"
+      - "--build-arg"
+      - "NODE_ENV=staging"
       - "-t"
       - >-
         $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
