@@ -19,7 +19,6 @@ RUN pnpm build
 
 FROM gcr.io/distroless/nodejs20-debian11 AS runner
 ENV NODE_ENV=staging
-# ENV VITE_NODE_ENV=staging
 WORKDIR /app
 
 COPY package.json ./
