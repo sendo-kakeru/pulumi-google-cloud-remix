@@ -15,10 +15,13 @@ RUN npx prisma generate
 FROM base AS builder
 COPY . .
 RUN pnpm i --frozen-lockfile
+ARG NODE_ENV
+RUN echo "VITE_NODE_ENV=$NODE_ENV" >> .env
 RUN pnpm build
 
 FROM gcr.io/distroless/nodejs20-debian11 AS runner
-ENV NODE_ENV=production
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
 WORKDIR /app
 
 COPY package.json ./
