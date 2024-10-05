@@ -3,6 +3,7 @@ steps:
     args:
       - build
       - "--no-cache"
+      - "--build-arg NODE_ENV=staging"
       - "-t"
       - >-
         $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
@@ -26,7 +27,6 @@ steps:
       --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
       --region="$_DEPLOY_REGION"
       --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING
-      --build-arg NODE_ENV=staging
       --allow-unauthenticated
       '
     ]
