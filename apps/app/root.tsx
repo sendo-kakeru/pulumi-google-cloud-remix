@@ -11,7 +11,6 @@ import type {
 	LinksFunction,
 	LoaderFunctionArgs,
 } from "@remix-run/node";
-
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -49,8 +48,6 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	console.log("import.meta.env.VITE_NODE_ENV", import.meta.env.VITE_NODE_ENV);
-	console.log("import.meta.env", import.meta.env);
 	return (
 		<html lang="en">
 			<head>
@@ -60,6 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
+				<p>{JSON.stringify(import.meta.env)}</p>
 				{children}
 				<ScrollRestoration />
 				<Scripts />
