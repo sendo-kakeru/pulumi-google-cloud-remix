@@ -6,8 +6,6 @@ WORKDIR /app
 RUN corepack enable
 
 FROM base AS deps
-RUN echo "VITE_CLOUDFLARE_R2_CUSTOM_DOMAIN=$VITE_CLOUDFLARE_R2_CUSTOM_DOMAIN" > .env 
-RUN echo "VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY" >> .env
 RUN echo "VITE_NODE_ENV=staging" >> .env
 RUN apt-get update -y && apt-get install -y openssl
 COPY package.json pnpm-lock.yaml* ./
@@ -25,6 +23,7 @@ ENV NODE_ENV=staging
 WORKDIR /app
 
 COPY package.json ./
+COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/build/ ./build
 COPY --from=deps /app/node_modules ./node_modules
