@@ -11,7 +11,6 @@ import type {
 	LinksFunction,
 	LoaderFunctionArgs,
 } from "@remix-run/node";
-
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
