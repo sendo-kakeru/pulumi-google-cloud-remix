@@ -26,6 +26,7 @@ steps:
       --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
       --region="$_DEPLOY_REGION"
       --set-env-vars DATABASE_URL=$$DATABASE_URL_PROD
+      --set-env-vars VITE_NODE_ENV=production
       --allow-unauthenticated
       '
     ]
