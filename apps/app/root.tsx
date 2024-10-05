@@ -57,7 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
-				<p>{JSON.stringify(import.meta.env)}</p>
+				<code>{JSON.stringify(import.meta.env)}</code>
 				{children}
 				<ScrollRestoration />
 				<Scripts />
