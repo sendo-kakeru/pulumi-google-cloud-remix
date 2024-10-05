@@ -17,6 +17,7 @@ COPY . .
 RUN pnpm i --frozen-lockfile
 ARG NODE_ENV
 RUN echo "VITE_NODE_ENV=$NODE_ENV" >> .env
+RUN cat .env
 RUN pnpm build
 
 FROM gcr.io/distroless/nodejs20-debian11 AS runner
