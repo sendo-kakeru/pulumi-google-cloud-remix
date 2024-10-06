@@ -10,7 +10,7 @@ generator client {
   // 本番用
   // binaryTargets = ["native", "debian-openssl-1.1.x"]
   // 開発用
-  binaryTargets = ["native", "linux-arm64-openssl-1.1.x"]
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
 }
 
 datasource db {
