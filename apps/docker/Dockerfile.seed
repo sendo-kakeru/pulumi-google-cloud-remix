@@ -1,0 +1,30 @@
+FROM node:20-slim AS base
+WORKDIR /app
+COPY package.json ./
+COPY prisma ./prisma
+RUN apt-get update -y && apt-get install -y openssl
+
+FROM base AS deps
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+ENV COREPACK_HOME=/okashibu/.cache/node/corepack
+RUN corepack enable
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm i --prod --frozen-lockfile
+RUN pnpm add tsx
+RUN npx prisma generate
+
+FROM base AS runner
+COPY --from=deps /app/node_modules ./node_modules
+CMD ["npx", "prisma", "db", "seed"]
+
+
+
+# FROM node:20-slim AS base
+# WORKDIR /app
+# COPY package.json ./
+# COPY prisma ./
+# RUN apt-get update -y && apt-get install -y openssl
+
+# FROM base AS runner
+# CMD ["npx", "prisma", "db", "seed"]

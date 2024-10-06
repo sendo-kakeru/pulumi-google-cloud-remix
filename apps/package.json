@@ -10,6 +10,9 @@
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.5",
     "@prisma/adapter-neon": "^5.19.1",
