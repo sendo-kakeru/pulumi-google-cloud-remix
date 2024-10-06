@@ -35,22 +35,21 @@ steps:
     secretEnv: [
       'DATABASE_URL_STAGING',
     ]
-  # - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
-  #   entrypoint: bash
-  #   args: [
-  #     '-c',
-  #     'gcloud run jobs update "$_JOB_NAME"
-  #     --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
-  #     --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
-  #     --region="$_DEPLOY_REGION"
-  #     --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING
-  #     --execute-now
-  #     '
-  #   ]
-  #   id: DeployJob
-  #   secretEnv: [
-  #     'DATABASE_URL_STAGING',
-  #   ]
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: bash
+    args: [
+      '-c',
+      'gcloud run jobs update "$_JOB_NAME"
+      --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
+      --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+      --region="$_DEPLOY_REGION"
+      --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING
+      '
+    ]
+    id: MigrationJob
+    secretEnv: [
+      'DATABASE_URL_STAGING',
+    ]
 images:
   - >-
     $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
@@ -63,7 +62,7 @@ availableSecrets:
       env: DATABASE_URL_STAGING
 substitutions:
   _SERVICE_NAME: todo-staging
-  # _JOB_NAME: todo-job-staging
+  _JOB_NAME: todo-migration-job-staging
   _DEPLOY_REGION: asia-northeast1
   _AR_HOSTNAME: asia-northeast1-docker.pkg.dev
   _PLATFORM: managed

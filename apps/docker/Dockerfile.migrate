@@ -1,0 +1,8 @@
+FROM node:20-slim AS base
+WORKDIR /app
+COPY package.json ./
+COPY prisma ./
+RUN apt-get update -y && apt-get install -y openssl
+
+FROM base AS runner
+CMD ["npx", "prisma", "migrate", "deploy"]
