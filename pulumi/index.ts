@@ -17,7 +17,7 @@ if (
 
 const pulumiConfig = new pulumi.Config();
 const projectId = "develop-436107";
-const projectNumber = 1022174569886;
+const projectNumber = "1022174569886";
 const region = "asia-northeast1";
 const buildRegion = "asia-east1";
 const cloudRunServiceName = "todo";
@@ -230,7 +230,7 @@ new gcp.cloudbuild.Trigger(`cloud-build-trigger-${stagingTag}`, {
     _AR_HOSTNAME: "asia-northeast1-docker.pkg.dev",
     _PLATFORM: "managed",
     _ARTIFACT_REGISTRY: artifactRegistryId,
-    _PROJECT_NUMBER: "'1022174569886",
+    _PROJECT_NUMBER: projectNumber,
   },
 	tags: [
 		"gcp-cloud-build-deploy-cloud-run",
@@ -240,56 +240,56 @@ new gcp.cloudbuild.Trigger(`cloud-build-trigger-${stagingTag}`, {
 	serviceAccount: pulumi.interpolate`projects/${projectId}/serviceAccounts/${cloud_build_service_account.email}`,
 });
 
-// (async () => {
-// 	const todoCloudRunServiceProd = await gcp.cloudrun.getService({
-// 		name: `${cloudRunServiceName}-${productionTag}`,
-// 		location: region,
-// 	});
-// 	const todoCloudRunServiceStaging = await gcp.cloudrun.getService({
-// 		name: `${cloudRunServiceName}-${stagingTag}`,
-// 		location: region,
-// 	});
+(async () => {
+	const todoCloudRunServiceProd = await gcp.cloudrun.getService({
+		name: `${cloudRunServiceName}-${productionTag}`,
+		location: region,
+	});
+	const todoCloudRunServiceStaging = await gcp.cloudrun.getService({
+		name: `${cloudRunServiceName}-${stagingTag}`,
+		location: region,
+	});
 
-// 	// cloudflare
-// 	const accountId = pulumiConfig.require("accountId");
-// 	const zoneId = pulumiConfig.require("zoneId");
-// 	const domain = pulumiConfig.require("domain");
+	// cloudflare
+	const accountId = pulumiConfig.require("accountId");
+	const zoneId = pulumiConfig.require("zoneId");
+	const domain = pulumiConfig.require("domain");
 
-// 	await build({
-// 		entryPoints: ["../proxies/src/index.ts"],
-// 		platform: "node",
-// 		bundle: true,
-// 		outfile: "../proxies/dist/worker.js",
-// 		format: "esm",
-// 		minify: true,
-// 	});
+	await build({
+		entryPoints: ["../proxies/src/index.ts"],
+		platform: "node",
+		bundle: true,
+		outfile: "../proxies/dist/worker.js",
+		format: "esm",
+		minify: true,
+	});
 
-// 	new cloudflare.WorkersScript("proxy-workers-script", {
-// 		accountId: accountId,
-// 		name: workersServiceName,
-// 		content: fs.readFileSync("../proxies/dist/worker.js", "utf8"),
-// 		module: true,
-// 		plainTextBindings: [
-// 			{
-// 				name: "ORIGIN_URL_PROD",
-// 				text: todoCloudRunServiceProd.statuses[0].url,
-// 			},
-// 			{
-// 				name: "ORIGIN_URL_STAGING",
-// 				text: todoCloudRunServiceStaging.statuses[0].url,
-// 			},
-// 		],
-// 	});
-// 	new cloudflare.WorkersDomain(`proxy-workers-domain-${productionTag}`, {
-// 		accountId,
-// 		hostname: `proxy-prod.${domain}`,
-// 		service: workersServiceName,
-// 		zoneId,
-// 	});
-// 	new cloudflare.WorkersDomain(`proxy-workers-domain-${stagingTag}`, {
-// 		accountId,
-// 		hostname: `proxy-staging.${domain}`,
-// 		service: workersServiceName,
-// 		zoneId,
-// 	});
-// })();
+	new cloudflare.WorkersScript("proxy-workers-script", {
+		accountId: accountId,
+		name: workersServiceName,
+		content: fs.readFileSync("../proxies/dist/worker.js", "utf8"),
+		module: true,
+		plainTextBindings: [
+			{
+				name: "ORIGIN_URL_PROD",
+				text: todoCloudRunServiceProd.statuses[0].url,
+			},
+			{
+				name: "ORIGIN_URL_STAGING",
+				text: todoCloudRunServiceStaging.statuses[0].url,
+			},
+		],
+	});
+	new cloudflare.WorkersDomain(`proxy-workers-domain-${productionTag}`, {
+		accountId,
+		hostname: `proxy-prod.${domain}`,
+		service: workersServiceName,
+		zoneId,
+	});
+	new cloudflare.WorkersDomain(`proxy-workers-domain-${stagingTag}`, {
+		accountId,
+		hostname: `proxy-staging.${domain}`,
+		service: workersServiceName,
+		zoneId,
+	});
+})();
