@@ -1,0 +1,143 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "--no-cache"
+      - "--build-arg"
+      - "NODE_ENV=$_NODE_ENV"
+      - "-t"
+      - >-
+        $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+      - apps
+      - "-f"
+      - apps/docker/Dockerfile.app
+    id: Build
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - >-
+        $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+    id: Push
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: bash
+    args: [
+      '-c',
+      'if [ "$_NODE_ENV" = "production" ]; then
+        gcloud run deploy "$_SERVICE_NAME"
+        --platform=managed
+        --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
+        --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+        --region="$_DEPLOY_REGION"
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_PROD
+        --allow-unauthenticated;
+      else
+        gcloud run deploy "$_SERVICE_NAME"
+        --platform=managed
+        --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
+        --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+        --region="$_DEPLOY_REGION"
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING
+        --allow-unauthenticated;
+      fi
+      '
+    ]
+    id: Deploy
+    secretEnv: [
+      'DATABASE_URL_PROD',
+      'DATABASE_URL_STAGING',
+    ]
+
+  # migrate
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "--no-cache"
+      - "-t"
+      - >-
+        $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_MIGRATE_JOB_NAME:$COMMIT_SHA
+      - apps
+      - "-f"
+      - apps/docker/Dockerfile.migrate
+    id: MigrationBuild
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - >-
+        $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_MIGRATE_JOB_NAME:$COMMIT_SHA
+    id: MigrationPush
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: bash
+    args: [
+      '-c',
+      'if [ "$_NODE_ENV" = "production" ]; then
+        gcloud run jobs update "$_MIGRATE_JOB_NAME"
+        --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_MIGRATE_JOB_NAME:$COMMIT_SHA"
+        --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+        --region="$_DEPLOY_REGION"
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_PROD;
+      else
+        gcloud run jobs update "$_MIGRATE_JOB_NAME"
+        --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_MIGRATE_JOB_NAME:$COMMIT_SHA"
+        --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+        --region="$_DEPLOY_REGION"
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING;
+      fi
+      '
+    ]
+    id: MigrationJob
+    secretEnv: [
+      'DATABASE_URL_PROD',
+      'DATABASE_URL_STAGING',
+    ]
+
+    # seed
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "--no-cache"
+      - "-t"
+      - >-
+        $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA
+      - apps
+      - "-f"
+      - apps/docker/Dockerfile.seed
+    id: SeedBuild
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - >-
+        $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA
+    id: SeedPush
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: bash
+    args: [
+      '-c',
+      'if [ "$_NODE_ENV" = "production" ]; then
+        gcloud run jobs update "$_SEED_JOB_NAME"
+        --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA"
+        --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+        --region="$_DEPLOY_REGION"
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_PROD;
+      else
+        gcloud run jobs update "$_SEED_JOB_NAME"
+        --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA"
+        --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+        --region="$_DEPLOY_REGION"
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING;
+      fi
+      '
+    ]
+    id: SeedJob
+    secretEnv: [
+      'DATABASE_URL_PROD',
+      'DATABASE_URL_STAGING',
+    ]
+options:
+  substitutionOption: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY
+availableSecrets:
+  secretManager:
+    - versionName: projects/$_PROJECT_NUMBER/secrets/database-url-prod-secret/versions/latest
+      env: DATABASE_URL_PROD
+    - versionName: projects/$_PROJECT_NUMBER/secrets/database-url-stg-secret/versions/latest
+      env: DATABASE_URL_STAGING

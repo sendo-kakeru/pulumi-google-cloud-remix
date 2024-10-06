@@ -182,7 +182,7 @@ const github_project_repository = new gcp.cloudbuildv2.Repository(
 	},
 );
 new gcp.cloudbuild.Trigger(`cloud-build-trigger-${productionTag}`, {
-	filename: `cloudbuild-${productionTag}.yaml`,
+	filename: "pulumi/cloudbuild.yaml",
 	location: buildRegion,
 	name: `${cloudRunServiceName}-trigger-${productionTag}`,
 	project: projectId,
@@ -211,7 +211,7 @@ new gcp.cloudbuild.Trigger(`cloud-build-trigger-${productionTag}`, {
 	serviceAccount: pulumi.interpolate`projects/${projectId}/serviceAccounts/${cloud_build_service_account.email}`,
 });
 new gcp.cloudbuild.Trigger(`cloud-build-trigger-${stagingTag}`, {
-	filename: `cloudbuild-${stagingTag}.yaml`,
+	filename: "pulumi/cloudbuild.yaml",
 	location: buildRegion,
 	name: `${cloudRunServiceName}-trigger-${stagingTag}`,
 	project: projectId,
