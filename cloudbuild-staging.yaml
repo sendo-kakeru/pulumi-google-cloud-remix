@@ -90,7 +90,7 @@ steps:
     entrypoint: bash
     args: [
       '-c',
-      'gcloud run jobs create "$_SEED_JOB_NAME"
+      'gcloud run jobs update "$_SEED_JOB_NAME"
       --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA"
       --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
       --region="$_DEPLOY_REGION"
