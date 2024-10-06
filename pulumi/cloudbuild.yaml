@@ -74,13 +74,13 @@ steps:
         --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_MIGRATE_JOB_NAME:$COMMIT_SHA"
         --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
         --region="$_DEPLOY_REGION"
-        --set-env-vars DATABASE_URL=$$DATABASE_URL_PROD
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_PROD;
       else
         gcloud run jobs update "$_MIGRATE_JOB_NAME"
         --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_MIGRATE_JOB_NAME:$COMMIT_SHA"
         --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
         --region="$_DEPLOY_REGION"
-        --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING;
       fi
       '
     ]
@@ -117,13 +117,13 @@ steps:
         --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA"
         --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
         --region="$_DEPLOY_REGION"
-        --set-env-vars DATABASE_URL=$$DATABASE_URL_PROD
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_PROD;
       else
         gcloud run jobs update "$_SEED_JOB_NAME"
         --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA"
         --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
         --region="$_DEPLOY_REGION"
-        --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING
+        --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING;
       fi
       '
     ]
