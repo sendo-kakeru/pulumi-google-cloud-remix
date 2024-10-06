@@ -35,7 +35,7 @@ steps:
     secretEnv: [
       'DATABASE_URL_STAGING',
     ]
-
+  # migrate
   - name: gcr.io/cloud-builders/docker
     args:
       - build
@@ -68,6 +68,39 @@ steps:
     secretEnv: [
       'DATABASE_URL_STAGING',
     ]
+  # seed
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "--no-cache"
+      - "-t"
+      - >-
+        $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA
+      - apps
+      - "-f"
+      - apps/docker/Dockerfile.seed
+    id: SeedBuild
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - >-
+        $_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA
+    id: SeedPush
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: bash
+    args: [
+      '-c',
+      'gcloud run jobs update "$_SEED_JOB_NAME"
+      --image="$_AR_HOSTNAME/$PROJECT_ID/$_ARTIFACT_REGISTRY/$REPO_NAME/$_SEED_JOB_NAME:$COMMIT_SHA"
+      --labels="managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+      --region="$_DEPLOY_REGION"
+      --set-env-vars DATABASE_URL=$$DATABASE_URL_STAGING
+      '
+    ]
+    id: SeedJob
+    secretEnv: [
+      'DATABASE_URL_STAGING',
+    ]
 options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
@@ -78,6 +111,7 @@ availableSecrets:
 substitutions:
   _SERVICE_NAME: todo-staging
   _MIGRATE_JOB_NAME: todo-migration-job-staging
+  _SEED_JOB_NAME: todo-seed-job-staging
   _DEPLOY_REGION: asia-northeast1
   _AR_HOSTNAME: asia-northeast1-docker.pkg.dev
   _PLATFORM: managed
