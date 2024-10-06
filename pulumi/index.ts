@@ -201,7 +201,7 @@ new gcp.cloudbuild.Trigger(`cloud-build-trigger-${productionTag}`, {
     _AR_HOSTNAME: "asia-northeast1-docker.pkg.dev",
     _PLATFORM: "managed",
     _ARTIFACT_REGISTRY: artifactRegistryId,
-    _PROJECT_NUMBER: "'1022174569886",
+    _PROJECT_NUMBER: projectNumber,
   },
 	tags: [
 		"gcp-cloud-build-deploy-cloud-run",
